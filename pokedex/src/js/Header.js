@@ -42,7 +42,7 @@ export default function Header() {
             : <>
             {alldatas.map((data) => 
             <>
-                <li>{data.name} {data.types[0].type.name}</li>
+                <li>{data.name} is type {data.types[0].type.name}</li>
                 <img src={data.sprites.front_default}/>
                 </>
             )}
