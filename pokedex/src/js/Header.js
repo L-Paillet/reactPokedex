@@ -36,7 +36,7 @@ export default function Header() {
     }, [url])
 
     return (
-        <div>
+        <div className="content">
             {chargement
             ? <p>Chargement</p>
             : <>
