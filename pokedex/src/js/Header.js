@@ -1,29 +1,57 @@
 import "../css/Header.css"
 import { useEffect, useState } from "react"
-export default function Header() {
-    const {allPokemons, setAllPokemons} = useState({})
-    const getAllPokemmons = async () => {
-        const res = await fetch("https://pokeapi.co/api/v2/pokemon?limit=20&offset=0");
-        const data = await res.json();
+import axios from 'axios';
 
-        function createPokemonObject(results) {
-            results.forEach(async (pokemon) => {
-                const res = await fetch(`https://pokeapi.co/api/v2/pokemon/${pokemon.name}`);
-                const data = await res.json();
-                setAllPokemons((currentList) => [...currentList, data]);
-                await allPokemons.sort((a,b)=> a.id - b.id);
-            });
-        }
-        createPokemonObject(data.results);
-        console.log(allPokemons);       
-    };
-    useEffect(()=>{
+export default function Header() {
+    const [alldatas, setData] = useState([])
+    const [chargement, setChargement]=useState(false)
+    const [url, setUrl] = useState('https://pokeapi.co/api/v2/pokemon')
+    const [nextUrl, setNextUrl] = useState()
+
+
+    const getAllPokemmons = async () => {
+        setChargement(true)
+        const res = await axios.get(url)
+        
+            console.log(res)
+            setNextUrl(res.data.next)
+            getPokemmon(res.data.results)
+        setChargement(false)
+    }
+
+    const getPokemmon = async(LesPokemons) => {
+        LesPokemons.map(async(LePokemon)=>{
+            const resultatPoke = await axios.get(LePokemon.url)
+            // console.log(resultatPoke)
+            setData(state=>{
+                state=[...state,resultatPoke.data]
+                state.sort((a,b)=>a.id>b.id?1:-1)
+                return state;
+            })
+        })
+    }
+
+    useEffect (() => {
         getAllPokemmons();
-    }, [])
+    }, [url])
 
     return (
         <div>
-            {/* {allPokemons.map(data.results)} */}
+            {chargement
+            ? <p>Chargement</p>
+            : <>
+            {alldatas.map((data) => 
+            <>
+                <li>{data.name} {data.types[0].type.name}</li>
+                <img src={data.sprites.front_default}/>
+                </>
+            )}
+
+            </>  }
+            {nextUrl && <button onClick={()=>{setData([])
+                 setUrl(nextUrl)}}>Change list</button>}
+
+
         </div>
     )
 }
