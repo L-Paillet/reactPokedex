@@ -3,6 +3,7 @@ import { useEffect, useState } from "react"
 import axios from 'axios';
 
 export default function Header() {
+    // setData stock, allData appel
     const [alldatas, setData] = useState([])
     const [chargement, setChargement]=useState(false)
     const [url, setUrl] = useState('https://pokeapi.co/api/v2/pokemon')
@@ -12,8 +13,6 @@ export default function Header() {
     const getAllPokemmons = async () => {
         setChargement(true)
         const res = await axios.get(url)
-        
-            console.log(res)
             setNextUrl(res.data.next)
             getPokemmon(res.data.results)
         setChargement(false)
@@ -42,8 +41,8 @@ export default function Header() {
             : <>
             {alldatas.map((data) => 
             <>
+                <img src={data.sprites.front_shiny}/>
                 <li>{data.name} is type {data.types[0].type.name}</li>
-                <img src={data.sprites.front_default}/>
                 </>
             )}
 
